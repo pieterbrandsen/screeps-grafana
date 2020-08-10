@@ -14,7 +14,7 @@ services:
       GRAPHITE_PORT_8125_UDP_ADDR: "statsd"
     env_file: docker-compose.env
     networks:
-     - screeps-server_screepsnw
+     - screeps-server_default
     external_links:
      - screeps:screeps
   statsd:
@@ -22,7 +22,7 @@ services:
     links: 
      - graphite
     networks:
-     - screeps-server_screepsnw
+     - screeps-server_default
     external_links:
      - screeps:screeps
   graphite: 
@@ -32,7 +32,7 @@ services:
      - /opt/graphite/conf
      - graphite_data:/opt/graphite/storage/whisper
     networks:
-     - screeps-server_screepsnw
+     - screeps-server_default
   grafana:
     container_name: grafana
     image: grafana/grafana
@@ -44,7 +44,7 @@ services:
     ports:
      - "1337:3000"
     networks:
-     - screeps-server_screepsnw
+     - screeps-server_default
   # grafana_setup_datasource:
   #   image: appropriate/curl
   #   links:
@@ -61,5 +61,5 @@ services:
   #     curl 'http://admin:admin@grafana:3000/api/dashboards/db' -X POST -H 'Content-Type: application/json;charset=UTF-8' --data @/sampleDashboard.json 
 
 networks:
-  screeps-server_screepsnw:
+  screeps-server_default:
     external: true
