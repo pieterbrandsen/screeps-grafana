@@ -44,10 +44,9 @@ class ScreepsStatsd
     if(token != "" && succes)
       @getMemory()
       return
-    console.log "ENV = " + JSON.stringify(process.env)
-    if process.env.SCREEPS_BASIC_AUTH == 1
-      @signinBasicAuth()
-      return
+    # if process.env.SCREEPS_BASIC_AUTH == 1
+    @signinBasicAuth()
+    return
     @client = new StatsD host: process.env.GRAPHITE_PORT_8125_UDP_ADDR
     console.log "New login request - " + new Date()
     options =
@@ -97,6 +96,7 @@ class ScreepsStatsd
       options.qs =
         path: 'stats'
         shard: process.env.SCREEPS_SHARD
+    
     rp(options).then (x) =>
       # yeah... dunno why
       token = x.headers['x-token']
@@ -112,8 +112,12 @@ class ScreepsStatsd
       else
         # memory comes deflated, first 3 chars "gz:" to indicate the deflation
         data = x.body.data.substring(3)
-        finalData = JSON.parse zlib.inflateSync(new Buffer(data, 'base64')).toString()
-        @report(finalData)
+        try 
+          buffer = Buffer.from(data, 'base64')
+          # finalData = JSON.parse zlib.inflateSync(new Buffer.from(data, 'base64')).toString()
+          @report(finalData)
+        catch e 
+          console.log e
 
   report: (data, prefix="") =>
     if prefix is ''
